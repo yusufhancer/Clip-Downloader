@@ -1,0 +1,8 @@
+node_modules
+.next
+.clips
+.tools
+test-results
+playwright-report
+*.log
+.git

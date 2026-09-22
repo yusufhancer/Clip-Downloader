@@ -1,3 +1,13 @@
+---
+title: YouTube Clip Downloader
+emoji: 🎬
+colorFrom: red
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Clip Downloader
 
 A one-page YouTube clip tool built with Next.js, TypeScript, Tailwind CSS, yt-dlp, and FFmpeg. No accounts, database, Redis, or external queue.
