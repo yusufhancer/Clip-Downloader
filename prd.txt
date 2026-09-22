@@ -1,0 +1,1413 @@
+# Product Requirements Document
+
+## YouTube Clip Downloader
+
+### 1. Product Overview
+
+YouTube Clip Downloader adalah web satu halaman yang memungkinkan user mengambil dan mengunduh hanya bagian tertentu dari sebuah video YouTube berdasarkan waktu mulai dan waktu akhir.
+
+Contoh penggunaan:
+
+Video YouTube memiliki durasi 30 menit.
+
+User hanya ingin bagian:
+
+* Start: `25:00`
+* End: `26:10`
+
+Sistem hanya akan memproses bagian tersebut dan menghasilkan file video berdurasi 1 menit 10 detik.
+
+Produk harus fokus pada kecepatan, kesederhanaan, dan kemudahan penggunaan.
+
+Tidak ada dashboard, halaman akun, menu kompleks, atau fitur sosial.
+
+Semua fungsi utama berada dalam satu halaman.
+
+---
+
+# 2. Product Goal
+
+Tujuan utama produk:
+
+* Mempermudah user mengambil bagian tertentu dari video tanpa perlu mengunduh seluruh video.
+* Mengurangi waktu download dan ukuran file.
+* Memberikan pengalaman yang cepat dan sederhana.
+* User harus bisa mendapatkan clip hanya dalam beberapa langkah.
+* Interface harus mudah dipahami bahkan oleh pengguna baru.
+
+---
+
+# 3. Target User
+
+Target utama:
+
+* Content creator
+* Video editor
+* Pelajar
+* Pengguna yang ingin menyimpan potongan tertentu dari video
+* Pengguna yang ingin mengambil reference clip
+* Pengguna yang membutuhkan potongan singkat dari video panjang
+
+---
+
+# 4. Core User Flow
+
+Flow utama:
+
+```text
+User membuka website
+↓
+User paste URL YouTube
+↓
+User menekan tombol Load Video
+↓
+Backend memvalidasi URL
+↓
+Sistem mengambil metadata video
+↓
+Video preview ditampilkan
+↓
+User menentukan Start Time
+↓
+User menentukan End Time
+↓
+User memilih format dan kualitas
+↓
+User menekan Download Clip
+↓
+Server memproses video
+↓
+Progress processing ditampilkan
+↓
+Clip selesai
+↓
+User mengunduh file
+```
+
+Target utama:
+
+User dapat mencapai proses download dengan sesedikit mungkin interaksi.
+
+---
+
+# 5. Page Structure
+
+Website hanya memiliki satu halaman.
+
+Struktur halaman:
+
+```text
+Navbar / Brand
+
+Hero Section
+
+URL Input
+
+Video Information
+
+Video Preview
+
+Clip Selection
+
+Output Settings
+
+Download Button
+
+Processing Status
+
+Download Result
+
+Footer
+```
+
+Tidak diperlukan route tambahan untuk MVP.
+
+Contoh:
+
+```text
+/
+```
+
+Semua proses dilakukan pada halaman utama.
+
+---
+
+# 6. Hero Section
+
+Hero dibuat sederhana.
+
+Isi:
+
+### Heading
+
+Contoh:
+
+```text
+Download Only the Part You Need
+```
+
+### Subheading
+
+Contoh:
+
+```text
+Paste a YouTube link, select the start and end time, and download only that part.
+```
+
+Tidak perlu hero image besar.
+
+Tujuan utama hero adalah membuat user langsung memahami fungsi website.
+
+---
+
+# 7. YouTube URL Input
+
+Komponen utama pertama.
+
+Contoh:
+
+```text
+[ Paste YouTube URL........................ ] [ Load Video ]
+```
+
+Input harus mendukung URL YouTube umum seperti:
+
+```text
+https://youtube.com/watch?v=VIDEO_ID
+```
+
+```text
+https://www.youtube.com/watch?v=VIDEO_ID
+```
+
+```text
+https://youtu.be/VIDEO_ID
+```
+
+Jika memungkinkan:
+
+```text
+https://youtube.com/shorts/VIDEO_ID
+```
+
+---
+
+# 8. URL Validation
+
+Sebelum request dikirim ke backend:
+
+Frontend melakukan validasi dasar.
+
+Backend tetap wajib melakukan validasi ulang.
+
+Error yang perlu ditangani:
+
+```text
+Invalid YouTube URL
+```
+
+```text
+Video not found
+```
+
+```text
+Video unavailable
+```
+
+```text
+Private video
+```
+
+```text
+Video cannot be processed
+```
+
+```text
+Unsupported URL
+```
+
+Error ditampilkan langsung di bawah input.
+
+Tidak menggunakan browser alert.
+
+---
+
+# 9. Loading State
+
+Setelah user menekan:
+
+```text
+Load Video
+```
+
+Tampilkan loading state.
+
+Contoh:
+
+```text
+Loading video information...
+```
+
+Button menjadi disabled selama request berlangsung.
+
+User tidak boleh mengirim request yang sama berkali-kali dengan spam-click.
+
+---
+
+# 10. Video Metadata
+
+Setelah URL valid, backend mengambil informasi video.
+
+Minimal metadata:
+
+```text
+videoId
+title
+thumbnail
+duration
+channelName
+```
+
+Optional:
+
+```text
+uploadDate
+viewCount
+```
+
+UI hanya perlu menampilkan informasi yang berguna.
+
+Contoh:
+
+```text
+Thumbnail
+
+How to Build Something
+
+Channel Name
+
+Duration: 30:24
+```
+
+---
+
+# 11. Video Preview
+
+Setelah metadata berhasil dimuat, tampilkan preview video.
+
+Preview digunakan supaya user bisa menentukan bagian yang ingin diambil.
+
+Preview harus memiliki:
+
+* Play
+* Pause
+* Seek
+* Current time
+* Duration
+
+Jika memungkinkan, gunakan official YouTube embedded player untuk preview.
+
+Preview tidak harus menggunakan video hasil download dari backend.
+
+---
+
+# 12. Clip Time Selection
+
+User harus bisa menentukan:
+
+```text
+Start Time
+End Time
+```
+
+Format utama:
+
+```text
+HH:MM:SS
+```
+
+Untuk video pendek juga boleh ditampilkan sebagai:
+
+```text
+MM:SS
+```
+
+Contoh:
+
+```text
+Start
+00:25:00
+
+End
+00:26:10
+```
+
+---
+
+# 13. Quick Time Selection
+
+Untuk meningkatkan UX, sediakan tombol:
+
+```text
+Set Start to Current Time
+```
+
+dan:
+
+```text
+Set End to Current Time
+```
+
+Flow:
+
+User memutar video.
+
+Ketika menemukan awal bagian:
+
+```text
+Set Start
+```
+
+Ketika menemukan akhir bagian:
+
+```text
+Set End
+```
+
+Ini membuat user tidak perlu mengetik timestamp secara manual.
+
+---
+
+# 14. Timeline Range Selector
+
+Jika memungkinkan, tambahkan visual timeline.
+
+Contoh:
+
+```text
+0:00 ──────────[===========]────────── 30:00
+                ↑           ↑
+              Start        End
+```
+
+Timeline memiliki dua handle:
+
+```text
+Start Handle
+End Handle
+```
+
+Ketika handle digeser:
+
+Start Time dan End Time otomatis berubah.
+
+Ketika input waktu diubah:
+
+Timeline juga ikut berubah.
+
+Keduanya harus synchronized.
+
+---
+
+# 15. Time Validation
+
+Rules:
+
+```text
+Start Time >= 0
+```
+
+```text
+End Time <= video duration
+```
+
+```text
+Start Time < End Time
+```
+
+Clip tidak boleh memiliki durasi `0`.
+
+Jika input salah:
+
+```text
+End time must be greater than start time.
+```
+
+atau:
+
+```text
+Selected time exceeds the video duration.
+```
+
+---
+
+# 16. Selected Clip Duration
+
+Tampilkan durasi clip secara realtime.
+
+Contoh:
+
+```text
+Clip Duration
+
+01:10
+```
+
+Perhitungan:
+
+```text
+clipDuration = endTime - startTime
+```
+
+---
+
+# 17. Clip Duration Limit
+
+MVP sebaiknya memiliki batas durasi clip untuk mencegah penggunaan resource server berlebihan.
+
+Contoh konfigurasi:
+
+```text
+MAX_CLIP_DURATION
+```
+
+Nilainya tidak boleh hard-coded di frontend.
+
+Backend menentukan limit sebenarnya.
+
+Frontend hanya menampilkan nilai dari configuration/API jika diperlukan.
+
+Jika user melewati batas:
+
+```text
+Selected clip is too long.
+```
+
+---
+
+# 18. Output Format
+
+Untuk MVP:
+
+```text
+MP4
+```
+
+Optional:
+
+```text
+MP3
+```
+
+Interface:
+
+```text
+Format
+
+[ MP4 ▼ ]
+```
+
+Jika MP3 dipilih:
+
+Output hanya audio.
+
+---
+
+# 19. Video Quality
+
+User dapat memilih kualitas yang tersedia.
+
+Contoh:
+
+```text
+360p
+480p
+720p
+1080p
+```
+
+Jangan tampilkan resolution yang sebenarnya tidak tersedia.
+
+Backend menentukan quality yang tersedia berdasarkan source video.
+
+Jika requested quality tidak tersedia:
+
+Gunakan quality terdekat atau minta user memilih ulang.
+
+Jangan diam-diam menghasilkan kualitas yang berbeda tanpa informasi.
+
+---
+
+# 20. Download Clip Button
+
+CTA utama:
+
+```text
+Download Clip
+```
+
+Button hanya aktif jika:
+
+* URL sudah valid
+* Metadata tersedia
+* Start time valid
+* End time valid
+* Output format valid
+
+Saat processing:
+
+Button disabled.
+
+---
+
+# 21. Backend Processing Flow
+
+Ketika user menekan Download Clip:
+
+Frontend mengirim request seperti:
+
+```json
+{
+  "videoId": "example",
+  "startTime": 1500,
+  "endTime": 1570,
+  "format": "mp4",
+  "quality": "720p"
+}
+```
+
+Timestamp dikirim dalam satuan detik.
+
+Backend melakukan:
+
+```text
+Validate request
+↓
+Validate video
+↓
+Validate timestamp
+↓
+Retrieve source media
+↓
+Extract selected range
+↓
+Encode/remux if required
+↓
+Generate output file
+↓
+Return download result
+```
+
+---
+
+# 22. Processing Job
+
+Processing video sebaiknya menggunakan sistem job.
+
+Status:
+
+```text
+queued
+processing
+completed
+failed
+expired
+```
+
+Setiap request mendapat:
+
+```text
+jobId
+```
+
+Contoh:
+
+```json
+{
+  "jobId": "uuid",
+  "status": "processing"
+}
+```
+
+Frontend menggunakan jobId untuk mengecek status.
+
+---
+
+# 23. Processing Progress
+
+UI harus memberikan feedback.
+
+Contoh:
+
+```text
+Preparing video...
+```
+
+```text
+Processing clip...
+```
+
+```text
+Finalizing...
+```
+
+Jika backend menyediakan progress:
+
+```text
+Processing clip
+
+████████████████░░░░
+
+78%
+```
+
+Jika progress sebenarnya tidak tersedia, gunakan status step-based daripada progress palsu.
+
+---
+
+# 24. Completed State
+
+Ketika proses selesai:
+
+Tampilkan:
+
+```text
+Your clip is ready.
+```
+
+Informasi:
+
+```text
+Filename
+Duration
+Resolution
+File size
+```
+
+CTA:
+
+```text
+Download Clip
+```
+
+Optional:
+
+```text
+Create Another Clip
+```
+
+---
+
+# 25. Create Another Clip
+
+Setelah proses selesai user bisa menekan:
+
+```text
+Create Another Clip
+```
+
+State kembali ke clip selector.
+
+Video yang sama dapat tetap aktif supaya user bisa mengambil bagian lainnya.
+
+---
+
+# 26. Error Handling
+
+Backend error harus diterjemahkan menjadi pesan yang mudah dipahami.
+
+Contoh:
+
+```text
+This video is unavailable.
+```
+
+```text
+The selected section cannot be processed.
+```
+
+```text
+Processing failed. Please try again.
+```
+
+```text
+The video is longer than supported.
+```
+
+```text
+The selected clip is too long.
+```
+
+```text
+The server is currently busy.
+```
+
+Jangan menampilkan raw stack trace atau error internal.
+
+---
+
+# 27. Temporary Files
+
+Hasil processing tidak disimpan permanen.
+
+Setiap output memiliki expiration time.
+
+Contoh konsep:
+
+```text
+expiresAt
+```
+
+Setelah expired:
+
+File otomatis dihapus dari storage.
+
+Tujuan:
+
+* Menghemat storage
+* Menjaga privacy
+* Mengurangi file sampah
+* Mengurangi biaya server
+
+---
+
+# 28. No Account Requirement
+
+MVP tidak membutuhkan:
+
+```text
+Login
+Register
+Profile
+Dashboard
+User account
+```
+
+User dapat menggunakan service langsung.
+
+---
+
+# 29. Database Requirement
+
+Database tidak harus kompleks.
+
+Database hanya digunakan jika dibutuhkan untuk tracking job.
+
+Minimal entity:
+
+```text
+processing_jobs
+```
+
+Fields:
+
+```text
+id
+video_id
+source_url
+video_title
+start_time
+end_time
+clip_duration
+format
+quality
+status
+progress
+output_path
+file_size
+error_code
+error_message
+created_at
+updated_at
+expires_at
+```
+
+File video tidak disimpan di database.
+
+Database hanya menyimpan metadata/path.
+
+---
+
+# 30. Privacy
+
+Website tidak perlu menyimpan:
+
+* Viewing history permanen
+* Identitas user
+* Data personal yang tidak diperlukan
+
+Processing job harus expired otomatis.
+
+IP address tidak perlu disimpan kecuali memang dibutuhkan untuk security/rate limiting dan harus ditangani sesuai kebijakan privasi.
+
+---
+
+# 31. Security
+
+Backend wajib melakukan:
+
+* URL validation
+* Parameter validation
+* Request size limitation
+* Rate limiting
+* Input sanitization
+* Output filename sanitization
+
+Backend tidak boleh menerima arbitrary URL.
+
+Hanya domain/source yang memang didukung.
+
+Tujuan penting:
+
+Mencegah SSRF.
+
+Jangan izinkan user memasukkan URL internal seperti:
+
+```text
+localhost
+127.0.0.1
+192.168.x.x
+internal network
+```
+
+Backend juga harus mencegah command injection saat menjalankan media-processing tools.
+
+Semua argument harus diberikan sebagai structured arguments, bukan concatenated shell command.
+
+---
+
+# 32. Rate Limiting
+
+Karena video processing membutuhkan resource tinggi, rate limiting wajib tersedia.
+
+Rate limit dibuat configurable.
+
+Contoh:
+
+```text
+RATE_LIMIT
+MAX_CONCURRENT_JOBS
+MAX_CLIP_DURATION
+MAX_VIDEO_DURATION
+```
+
+Jangan hard-code business limit ke banyak tempat.
+
+---
+
+# 33. Copyright / Usage Notice
+
+Website harus menampilkan notice singkat di area dekat tombol download atau footer.
+
+Contoh:
+
+```text
+Only download or process content that you have permission or the legal right to use.
+```
+
+Tidak perlu popup mengganggu.
+
+---
+
+# 34. Responsive Design
+
+Website harus berjalan dengan baik di:
+
+```text
+Desktop
+Laptop
+Tablet
+Mobile
+```
+
+Pada desktop:
+
+Content berada di tengah dengan max-width.
+
+Pada mobile:
+
+Semua komponen menjadi satu kolom.
+
+Input timestamp harus tetap mudah digunakan dengan layar kecil.
+
+---
+
+# 35. UI Direction
+
+Design harus:
+
+* Minimal
+* Modern
+* Fast
+* Utility-first
+* Tidak berlebihan
+* Tidak terlihat seperti AI-generated landing page generic
+
+Hindari:
+
+* Gradient berlebihan
+* Animasi tidak berguna
+* Hero terlalu besar
+* Banyak card tanpa alasan
+* Testimonial palsu
+* Fake statistics
+* Fake users counter
+* Pricing section
+* Feature marketing section panjang
+
+Web ini adalah tool.
+
+UI harus terasa seperti tool.
+
+---
+
+# 36. Suggested Main Layout
+
+Desktop:
+
+```text
+------------------------------------------------
+
+             Clip Downloader
+
+Paste a YouTube link and download
+only the section you need.
+
+[ YouTube URL.................... ] [ Load ]
+
+------------------------------------------------
+
+[ Thumbnail / Video Preview ]
+
+Video Title
+Channel Name · 30:24
+
+------------------------------------------------
+
+Select Clip
+
+Start                       End
+[ 00:25:00 ]                [ 00:26:10 ]
+
+[ Set Start ]               [ Set End ]
+
+0:00 ─────────[========]──────── 30:24
+
+Clip Duration: 01:10
+
+------------------------------------------------
+
+Format
+[ MP4 ]
+
+Quality
+[ 720p ]
+
+[ Download Clip ]
+
+------------------------------------------------
+```
+
+---
+
+# 37. Visual States
+
+UI minimal harus memiliki state berikut:
+
+### Empty
+
+Belum ada video.
+
+### Loading
+
+Sedang mengambil metadata.
+
+### Loaded
+
+Video berhasil dimuat.
+
+### Invalid
+
+URL/video tidak valid.
+
+### Ready
+
+Timestamp sudah valid.
+
+### Processing
+
+Clip sedang dibuat.
+
+### Completed
+
+Clip tersedia.
+
+### Failed
+
+Processing gagal.
+
+---
+
+# 38. API Design
+
+Contoh endpoint.
+
+### Load Video
+
+```text
+POST /api/video/info
+```
+
+Request:
+
+```json
+{
+  "url": "https://youtube.com/watch?v=..."
+}
+```
+
+Response:
+
+```json
+{
+  "videoId": "...",
+  "title": "...",
+  "thumbnail": "...",
+  "duration": 1824,
+  "channel": "...",
+  "qualities": [
+    "360p",
+    "720p",
+    "1080p"
+  ]
+}
+```
+
+---
+
+### Create Clip
+
+```text
+POST /api/clips
+```
+
+Request:
+
+```json
+{
+  "videoId": "...",
+  "startTime": 1500,
+  "endTime": 1570,
+  "format": "mp4",
+  "quality": "720p"
+}
+```
+
+Response:
+
+```json
+{
+  "jobId": "...",
+  "status": "queued"
+}
+```
+
+---
+
+### Job Status
+
+```text
+GET /api/jobs/:id
+```
+
+Response:
+
+```json
+{
+  "jobId": "...",
+  "status": "processing",
+  "progress": 60
+}
+```
+
+---
+
+### Completed Job
+
+```json
+{
+  "jobId": "...",
+  "status": "completed",
+  "downloadUrl": "...",
+  "expiresAt": "..."
+}
+```
+
+---
+
+# 39. Suggested Tech Architecture
+
+Frontend:
+
+```text
+Next.js
+TypeScript
+Tailwind CSS
+```
+
+UI components:
+
+```text
+shadcn/ui
+```
+
+Backend bisa menggunakan:
+
+```text
+Next.js API
+```
+
+untuk prototype.
+
+Untuk production-heavy processing, lebih baik dipisahkan:
+
+```text
+Frontend
+↓
+API
+↓
+Job Queue
+↓
+Media Worker
+↓
+Temporary Storage
+```
+
+Contoh:
+
+```text
+Next.js frontend
+Node.js API
+Redis queue
+Worker
+FFmpeg
+PostgreSQL
+Object storage
+```
+
+---
+
+# 40. Media Processing
+
+Media clipping sebaiknya dilakukan menggunakan tool media seperti:
+
+```text
+FFmpeg
+```
+
+FFmpeg bertanggung jawab untuk:
+
+* trimming
+* remuxing
+* audio extraction
+* encoding jika diperlukan
+
+Jika memungkinkan gunakan stream copy untuk mengurangi processing.
+
+Encoding ulang hanya dilakukan ketika diperlukan.
+
+---
+
+# 41. Job Queue
+
+Untuk production:
+
+Jangan melakukan proses video berat langsung dalam HTTP request utama.
+
+Gunakan:
+
+```text
+API
+↓
+Queue
+↓
+Worker
+```
+
+Benefit:
+
+* Request tidak timeout
+* Bisa mengatur concurrency
+* Bisa retry job
+* Server lebih stabil
+
+---
+
+# 42. Caching
+
+Metadata video dapat di-cache berdasarkan:
+
+```text
+videoId
+```
+
+Contoh TTL:
+
+```text
+15–60 minutes
+```
+
+Tujuannya mengurangi request metadata berulang.
+
+Output clip tidak perlu cache jangka panjang.
+
+---
+
+# 43. Performance Target
+
+Target UX:
+
+URL metadata harus terasa cepat.
+
+UI harus tetap responsive ketika processing berjalan.
+
+Video processing tidak boleh memblokir frontend.
+
+Frontend harus menggunakan async job state.
+
+---
+
+# 44. Accessibility
+
+Minimum:
+
+* Semua input memiliki label
+* Keyboard navigation
+* Visible focus state
+* Proper button semantics
+* Error menggunakan readable text
+* Jangan hanya mengandalkan warna
+* Loading state dapat dibaca screen reader
+
+---
+
+# 45. SEO
+
+Karena web hanya satu halaman, SEO cukup sederhana.
+
+Metadata:
+
+```text
+title
+description
+canonical
+OpenGraph
+```
+
+Tidak perlu sistem blog untuk MVP.
+
+---
+
+# 46. MVP Scope
+
+Fitur MVP:
+
+```text
+YouTube URL input
+URL validation
+Load metadata
+Video preview
+Start time
+End time
+Set start from player
+Set end from player
+Clip duration
+MP4 output
+Quality selection
+Clip processing
+Processing state
+Download result
+Automatic file expiration
+Rate limiting
+Basic error handling
+Responsive design
+```
+
+---
+
+# 47. Post-MVP Features
+
+Fitur yang dapat ditambahkan kemudian:
+
+```text
+MP3 extraction
+Multiple clips from one video
+Frame preview
+Timeline thumbnails
+Keyboard shortcuts
+Clip filename customization
+Batch clipping
+Shareable clip link
+Audio-only clipping
+Dark/light theme
+Paste URL auto-detection
+```
+
+Fitur tersebut tidak boleh mengganggu pembangunan MVP.
+
+---
+
+# 48. Non-Goals
+
+MVP bukan:
+
+```text
+Video editor penuh
+YouTube clone
+Cloud storage
+Social media platform
+User dashboard
+Permanent video hosting
+Account management platform
+```
+
+Jangan menambahkan fitur tersebut tanpa requirement baru.
+
+---
+
+# 49. Success Criteria
+
+Produk dianggap berhasil jika user dapat:
+
+```text
+Paste URL
+↓
+Preview video
+↓
+Select start/end
+↓
+Process clip
+↓
+Download clip
+```
+
+tanpa:
+
+* Membuat akun
+* Berpindah halaman
+* Mengunduh seluruh video secara manual
+* Menggunakan software editing eksternal
+
+---
+
+# 50. Core Product Principle
+
+Prinsip utama:
+
+```text
+Paste → Select → Download
+```
+
+Setiap fitur baru harus mendukung flow tersebut.
+
+Jika sebuah fitur membuat proses semakin rumit tanpa manfaat jelas, fitur tersebut tidak dimasukkan ke MVP.

@@ -1,0 +1,22 @@
+import { mkdir, writeFile, chmod, rename, rm } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import path from "node:path";
+
+const names = { win32: "yt-dlp.exe", darwin: "yt-dlp_macos", linux: process.arch === "arm64" ? "yt-dlp_linux_aarch64" : "yt-dlp_linux" };
+const asset = names[process.platform];
+if (!asset) throw new Error("Set YT_DLP_PATH to an installed yt-dlp on this platform.");
+const base = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/";
+const [binaryResponse, hashesResponse] = await Promise.all([fetch(base + asset), fetch(base + "SHA2-256SUMS")]);
+if (!binaryResponse.ok || !hashesResponse.ok) throw new Error("Could not download yt-dlp and its checksum.");
+const binary = Buffer.from(await binaryResponse.arrayBuffer());
+const hashes = await hashesResponse.text();
+const expected = hashes.split("\n").find(line => line.trim().split(/\s+/)[1] === asset)?.split(/\s+/)[0];
+if (!expected || createHash("sha256").update(binary).digest("hex") !== expected) throw new Error("yt-dlp checksum mismatch.");
+const dir = path.resolve(".tools");
+await mkdir(dir, { recursive: true });
+const destination = path.join(dir, process.platform === "win32" ? "yt-dlp.exe" : "yt-dlp");
+await writeFile(destination + ".tmp", binary);
+await chmod(destination + ".tmp", 0o755);
+await rm(destination, { force: true });
+await rename(destination + ".tmp", destination);
+console.log(`Verified yt-dlp installed at ${destination}`);

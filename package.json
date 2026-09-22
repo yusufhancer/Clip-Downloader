@@ -1,0 +1,35 @@
+{
+  "name": "youtube-clip-downloader",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "next typegen && tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "setup:media": "node scripts/setup-media.mjs"
+  },
+  "dependencies": {
+    "next": "^16.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "ffmpeg-static": "^5.3.0",
+    "ffprobe-static": "^3.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "@tailwindcss/postcss": "^4.2.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^16.2.0",
+    "tailwindcss": "^4.2.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0"
+  }
+}
